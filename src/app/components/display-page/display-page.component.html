@@ -1,0 +1,15 @@
+<div class='wrapper'>
+  <div class='message'>
+    <div [ngStyle]='{visibility: resultMsgVisible ? "visible" : "hidden"}'>
+      <h2 class='centered-content'>Longest time worked on projects together:</h2>
+      <h1 class='centered-content'>{{resultMsg}}</h1>
+    </div>
+    <div class='errorMsg' [ngStyle]='{visibility: errorMsgVisible ? "visible" : "hidden"}'>
+      <h1>INVALID FILE</h1>
+    </div>
+  </div>
+    <form class='form centered-content' (submit)='onSubmit($event)'>
+      <input name='filePath' type='file'>
+      <button type='submit'>Read File</button>
+    </form>
+</div>
