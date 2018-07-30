@@ -87,9 +87,6 @@ export class EmployeeUtilsService {
     let duration = moment.duration(end.diff(start)).asDays();
     duration = Math.trunc(duration);
     timeWorked = duration > 0 ? timeWorked += duration : timeWorked;
-    console.log('start', start.format("YYYY-MM-DD"));
-    console.log('end', end.format("YYYY-MM-DD"));
-    console.log('duration', duration);
     return timeWorked;
   }
 
@@ -121,7 +118,6 @@ export class EmployeeUtilsService {
     commonProject.forEach((x, i) => {
       switch (i) {
         case 0:
-          console.log('first');
           temp.start = moment(x.start);
           temp.end = moment(x.end);
           if(commonProject.length===1){
@@ -129,7 +125,6 @@ export class EmployeeUtilsService {
           }
           break;
         case commonProject.length - 1:
-          console.log('last');
           if (this.IsOverlapFull(x, temp)) {
             timeWorked = this.AddDurationAsDays(temp.start, temp.end, timeWorked);
           } else if (this.IsOverlapAtEnd(x, temp)) {
