@@ -140,7 +140,7 @@ export class EmployeeUtilsService {
           if (this.IsOverlapAtEnd(x, temp)) {
             temp.end = x.end;
           } else if (this.IsOverlapAtStart(x, temp)) {
-            temp.start = temp.start;
+            temp.start = x.start;
           } else {
             timeWorked = this.AddDurationAsDays(temp.start, temp.end, timeWorked);
             timeWorked = this.AddDurationAsDays(x.start, x.end, timeWorked);
