@@ -76,18 +76,22 @@ export class EmployeeUtilsService {
     return false;
   }
 
-  private IsOverlapFull(x, temp):  boolean{
-    if(temp.start <= x.start && x.start <= temp.end && x.end <= temp.end) {
+  private IsOverlapFull(x, temp): boolean {
+    if (temp.start <= x.start && x.start <= temp.end && x.end <= temp.end) {
       return true;
     }
     return false;
   }
 
+  private IsOverlapFullReverse(x, temp): boolean {
+    return this.IsOverlapFull(temp, x);
+  }
+
+
   private AddDurationAsDays(start:moment.Moment, end:moment.Moment, timeWorked:number):number {
     let duration = moment.duration(end.diff(start)).asDays();
     duration = Math.trunc(duration);
     timeWorked = duration > 0 ? timeWorked += duration : timeWorked;
-    console.log(`timeworked: ${timeWorked} duration: ${duration}`);
     return timeWorked;
   }
 
@@ -111,51 +115,36 @@ export class EmployeeUtilsService {
     return commonProjects;
   }
 
-  private GetDurationWithoutTimeOverlaps(commonProject): number {
+  private GetDurationWithoutTimeOverlaps(commonProjects): number {
     let timeWorked = 0;
     let start: moment.Moment;
     let end: moment.Moment;
     let temp = { start, end }
-    let useTemp:boolean;
-    commonProject.forEach((x, i) => {
-      switch (i) {
-        case 0:
-          temp.start = moment(x.start);
-          temp.end = moment(x.end);
-          useTemp = true;
-          if(commonProject.length===1){
-            timeWorked = this.AddDurationAsDays(temp.start, temp.end, timeWorked);
+    commonProjects.forEach((x, i) => {
+      if (x !== 'visited') {
+        temp.start = x.start;
+        temp.end = x.end;
+        commonProjects[i] = 'visited';
+        commonProjects.forEach((y, j) => {
+          if (y !== 'visited') {
+            if (this.IsOverlapAtEnd(x, temp)) {
+              temp.end = x.end;
+              commonProjects[j] == 'visited';
+            } else if (this.IsOverlapAtStart(x, temp)) {
+              temp.start = x.start;
+              commonProjects[j] == 'visited';
+            } else if (this.IsOverlapFull(x, temp)) {
+              commonProjects[j] == 'visited';
+            } else if (this.IsOverlapFullReverse(x, temp)) {
+              temp.start = y.start;
+              temp.end = y.end;
+              commonProjects[j] == 'visited';
+            }
           }
-          break;
-        case commonProject.length - 1:
-          if (this.IsOverlapFull(x, temp)) {
-            timeWorked = this.AddDurationAsDays(temp.start, temp.end, timeWorked);
-          } else if (this.IsOverlapAtEnd(x, temp)) {
-            timeWorked = this.AddDurationAsDays(temp.start, x.end, timeWorked);
-          } else if(this.IsOverlapAtStart(x, temp)) {
-            timeWorked = this.AddDurationAsDays(x.start, temp.end, timeWorked);
-          } else {
-            console.log('no overlap last', x.start.format("YYYY-MM-DD"), x.start.format("YYYY-MM-DD"));
-            console.log('no overlap last', temp.start.format("YYYY-MM-DD"), x.end.format("YYYY-MM-DD"));
-            timeWorked = useTemp ? this.AddDurationAsDays(temp.start, temp.end, timeWorked) : timeWorked ;
-            timeWorked = this.AddDurationAsDays(x.start, x.end, timeWorked);
-          }
-          break;
-        default:
-          if (this.IsOverlapAtEnd(x, temp)) {
-            temp.end = x.end;
-            useTemp = true;
-          } else if (this.IsOverlapAtStart(x, temp)) {
-            temp.start = x.start;
-            useTemp = true;
-          } else {
-            timeWorked = this.AddDurationAsDays(temp.start, temp.end, timeWorked);
-            timeWorked = this.AddDurationAsDays(x.start, x.end, timeWorked);
-            useTemp = false;
-          }
-          break;
+        });
+        timeWorked = this.AddDurationAsDays(temp.start, temp.end, timeWorked);
       }
-    })
+    });
     return timeWorked;
   }
 }
