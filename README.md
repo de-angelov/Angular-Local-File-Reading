@@ -36,21 +36,6 @@ Run `npm install` in project folder
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`
 
-Use `browse`  to select txt file;]
+Use `browse`  to select txt file
 
-Click `Read File` get employee work info 
-
-
-
-
-
-
-
-
-
-
-
-## Development server
-
-
-
+Click `Read File` to get employee work info 
