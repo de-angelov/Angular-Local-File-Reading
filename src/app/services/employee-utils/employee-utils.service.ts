@@ -14,7 +14,7 @@ export class EmployeeUtilsService {
       .split(/\r|\n/)
       .filter((x) => { return x !== ''})
       .map((x) => {
-        const temp = x.split(', ');
+        const temp = x.replace(/ /g,'').split(',');
         const project = {
           userId: temp[0],
           projectId: temp[1],
@@ -87,6 +87,7 @@ export class EmployeeUtilsService {
     let duration = moment.duration(end.diff(start)).asDays();
     duration = Math.trunc(duration);
     timeWorked = duration > 0 ? timeWorked += duration : timeWorked;
+    console.log(`timeworked: ${timeWorked} duration: ${duration}`);
     return timeWorked;
   }
 
@@ -115,11 +116,13 @@ export class EmployeeUtilsService {
     let start: moment.Moment;
     let end: moment.Moment;
     let temp = { start, end }
+    let useTemp:boolean;
     commonProject.forEach((x, i) => {
       switch (i) {
         case 0:
           temp.start = moment(x.start);
           temp.end = moment(x.end);
+          useTemp = true;
           if(commonProject.length===1){
             timeWorked = this.AddDurationAsDays(temp.start, temp.end, timeWorked);
           }
@@ -132,18 +135,23 @@ export class EmployeeUtilsService {
           } else if(this.IsOverlapAtStart(x, temp)) {
             timeWorked = this.AddDurationAsDays(x.start, temp.end, timeWorked);
           } else {
-            timeWorked = this.AddDurationAsDays(temp.start, temp.end, timeWorked);
+            console.log('no overlap last', x.start.format("YYYY-MM-DD"), x.start.format("YYYY-MM-DD"));
+            console.log('no overlap last', temp.start.format("YYYY-MM-DD"), x.end.format("YYYY-MM-DD"));
+            timeWorked = useTemp ? this.AddDurationAsDays(temp.start, temp.end, timeWorked) : timeWorked ;
             timeWorked = this.AddDurationAsDays(x.start, x.end, timeWorked);
           }
           break;
         default:
           if (this.IsOverlapAtEnd(x, temp)) {
             temp.end = x.end;
+            useTemp = true;
           } else if (this.IsOverlapAtStart(x, temp)) {
             temp.start = x.start;
+            useTemp = true;
           } else {
             timeWorked = this.AddDurationAsDays(temp.start, temp.end, timeWorked);
             timeWorked = this.AddDurationAsDays(x.start, x.end, timeWorked);
+            useTemp = false;
           }
           break;
       }
