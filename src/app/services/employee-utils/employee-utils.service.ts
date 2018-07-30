@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import * as moment from 'moment';
-import { endTimeRange } from '../../../../node_modules/@angular/core/src/profile/wtf_impl';
 
 @Injectable({
   providedIn: 'root'
@@ -64,21 +63,21 @@ export class EmployeeUtilsService {
   }
 
   private IsOverlapAtStart(x, temp): boolean{
-    if (temp.start > x.start && x.start < temp.end && x.end < temp.end){
+    if (temp.start >= x.start && x.start <= temp.end && x.end <= temp.end){
       return true;
     }
     return false;
   }
 
   private IsOverlapAtEnd(x, temp): boolean{
-    if(temp.start < x.start && x.start < temp.end && x.end > temp.end){
+    if(temp.start <= x.start && x.start <= temp.end && x.end >= temp.end){
       return true;
     }
     return false;
   }
 
   private IsOverlapFull(x, temp):  boolean{
-    if(temp.start < x.start && x.start < temp.end && x.end < temp.end) {
+    if(temp.start <= x.start && x.start <= temp.end && x.end <= temp.end) {
       return true;
     }
     return false;
@@ -122,13 +121,15 @@ export class EmployeeUtilsService {
     commonProject.forEach((x, i) => {
       switch (i) {
         case 0:
+          console.log('first');
           temp.start = moment(x.start);
           temp.end = moment(x.end);
-          if(commonProject.length=1){
+          if(commonProject.length===1){
             timeWorked = this.AddDurationAsDays(temp.start, temp.end, timeWorked);
           }
           break;
         case commonProject.length - 1:
+          console.log('last');
           if (this.IsOverlapFull(x, temp)) {
             timeWorked = this.AddDurationAsDays(temp.start, temp.end, timeWorked);
           } else if (this.IsOverlapAtEnd(x, temp)) {
