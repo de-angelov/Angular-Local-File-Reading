@@ -62,22 +62,34 @@ export class EmployeeUtilsService {
     };
   }
 
-  private IsOverlapAtStart(x, temp): boolean{
-    if (temp.start >= x.start && x.start <= temp.end && x.end <= temp.end){
+  private IsOverlapAtStart(x, temp): boolean {
+    if (
+      x.start <= temp.start &&
+      x.start <= temp.end &&
+      x.end <= temp.end &&
+      x.end >= temp.start) {
       return true;
     }
     return false;
   }
 
-  private IsOverlapAtEnd(x, temp): boolean{
-    if(temp.start <= x.start && x.start <= temp.end && x.end >= temp.end){
+  private IsOverlapAtEnd(x, temp): boolean {
+    if (
+      x.start >= temp.start &&
+      x.start <= temp.end &&
+      x.end >= temp.end &&
+      x.end <= temp.start) {
       return true;
     }
     return false;
   }
 
   private IsOverlapFull(x, temp): boolean {
-    if (temp.start <= x.start && x.start <= temp.end && x.end <= temp.end) {
+    if (
+      x.start >= temp.start && 
+      x.start <= temp.end && 
+      x.end <= temp.end &&
+      x.end >= temp.start) {
       return true;
     }
     return false;
@@ -116,32 +128,37 @@ export class EmployeeUtilsService {
   }
 
   private GetDurationWithoutTimeOverlaps(commonProjects): number {
+    const visited = Array.from( { length: commonProjects.length });
     let timeWorked = 0;
     let start: moment.Moment;
     let end: moment.Moment;
     let temp = { start, end }
+    
     commonProjects.forEach((x, i) => {
-      if (x !== 'visited') {
-        temp.start = x.start;
-        temp.end = x.end;
-        commonProjects[i] = 'visited';
+      temp.start = x.start;
+      temp.end = x.end;
+
+      if (visited[i] !== 'visited') {
+        visited[i] = 'visited';
+
         commonProjects.forEach((y, j) => {
-          if (y !== 'visited') {
-            if (this.IsOverlapAtEnd(x, temp)) {
-              temp.end = x.end;
-              commonProjects[j] == 'visited';
-            } else if (this.IsOverlapAtStart(x, temp)) {
-              temp.start = x.start;
-              commonProjects[j] == 'visited';
-            } else if (this.IsOverlapFull(x, temp)) {
-              commonProjects[j] == 'visited';
-            } else if (this.IsOverlapFullReverse(x, temp)) {
+          if (visited[j] !== 'visited') {
+             if (this.IsOverlapFull(y, temp)) {
+              visited[j] = 'visited';
+            } else if (this.IsOverlapFullReverse(y, temp)) {
               temp.start = y.start;
               temp.end = y.end;
-              commonProjects[j] == 'visited';
+              visited[j] = 'visited';
+            } else if (this.IsOverlapAtEnd(y, temp)) {
+              temp.end = y.end;
+              visited[j] = 'visited';
+            } else if (this.IsOverlapAtStart(y, temp)) {
+              temp.start = y.start;
+              visited[j] = 'visited';
             }
           }
         });
+
         timeWorked = this.AddDurationAsDays(temp.start, temp.end, timeWorked);
       }
     });
