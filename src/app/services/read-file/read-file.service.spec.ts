@@ -12,4 +12,8 @@ describe('ReadFileService', () => {
   it('should be created', inject([ReadFileService], (service: ReadFileService) => {
     expect(service).toBeTruthy();
   }));
+  
+  it('should be created', inject([ReadFileService], (service: ReadFileService) => {
+    expect(service).toBeTruthy();
+  }));
 });

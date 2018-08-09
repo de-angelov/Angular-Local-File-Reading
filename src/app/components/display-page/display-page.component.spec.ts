@@ -16,10 +16,11 @@ describe('DisplayPageComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(DisplayPageComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+    
   });
 
   it('should create', () => {
+    fixture.detectChanges();
     expect(component).toBeTruthy();
   });
 });

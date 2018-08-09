@@ -1,12 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ReadFileService } from '../../services/read-file/read-file.service';
 import { EmployeeUtilsService } from '../../services/employee-utils/employee-utils.service';
+import { IResult } from '../../models/result';
 
-
-interface IResult {
-  topEmployees: string[];
-  topWorkedTime: number;
-}
 
 @Component({
   selector: 'app-display-page',
@@ -30,7 +26,7 @@ export class DisplayPageComponent implements OnInit {
     const file = e.target.filePath.files[0];
     this.readFileService.getText(file).subscribe(
       (res)=>{
-        const results: any = this.employeeUtils.GetTopTwo(res);
+        const results: IResult = this.employeeUtils.GetTopTwo(res);
         [this.employeeA, this.employeeB] = results.topEmployees;
         if(this.employeeA && this.employeeB){
           this.timeWorkedTogether = results.topTimeWorked;

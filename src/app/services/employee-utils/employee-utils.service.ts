@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as moment from 'moment';
+import { IResult } from '../../models/result';
 
 @Injectable({
   providedIn: 'root'
@@ -8,7 +9,7 @@ export class EmployeeUtilsService {
 
   constructor() {}
 
-  public GetTopTwo(text: string): Object {
+  public GetTopTwo(text: string): IResult {
     const employees = new Map();
     text
       .split(/\r|\n/)
